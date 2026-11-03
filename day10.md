@@ -6,15 +6,15 @@
 
 ## 2. Настройка Git
 bash
-- git config --global user.name "Твой username на GitHub"
-- git config --global user.email "Твой email на GitHub"
+- git config --global user.name lusimihailik-dev
+- git config --global user.email lusimihailik@gmail.com
 - git config --list
 
 ## 3. Создание SSH-ключа
 ### Зачем: чтобы GitHub узнавал тебя без пароля.
 
 bash
-- ssh-keygen -t ed25519 -C "твой_email@example.com"
+- ssh-keygen -t ed25519 -C lusimihailik@gmail.com
 
 ### Что произойдёт:
 - Нажми Enter (сохранить в папку по умолчанию).
@@ -60,7 +60,7 @@ bash
 - Visibility: Public.
 - НЕ ставь галочку «Initialize with README».
 - Нажми Create repository.
-- Скопируй URL (SSH): git@github.com:твой_username/qa-portfolio.git.
+- Скопируй URL (SSH): git@github.com:lusimihailik-dev/qa-portfolio.git.
 
 ## 9. Инициализация репозитория на хосте
 bash
@@ -71,7 +71,7 @@ bash
 
 ## 10. Привязка к GitHub и отправка
 bash
-- git remote add origin git@github.com:твой_username/qa-portfolio.git
+- git remote add origin git@github.com:lusimihailik-dev/qa-portfolio.git
 - git branch -M main
 - git push -u origin main
 
@@ -81,7 +81,7 @@ bash
 - git push -u origin main — отправляет файлы на GitHub.
 
 ## 11. Проверка на GitHub
-- Открой https://github.com/твой_username/qa-portfolio.
+- Открой https://github.com/lusimihailik-dev/qa-portfolio.
 - Обнови страницу — должны увидеть все файлы.
 - Если файлы на месте — поздравляю, у тебя есть портфолио на GitHub!
 
