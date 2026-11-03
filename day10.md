@@ -1,117 +1,96 @@
-📘 День 10 — Git → GitHub: портфолио в интернете
-1. Зачем QA GitHub
-Портфолио — рекрутеры видят твои конспекты, тест-кейсы, баг-репорты.
+# День 10 — Git → GitHub: портфолио в интернете
+## 1. Зачем QA GitHub
+- Портфолио — рекрутеры видят твои конспекты, тест-кейсы, баг-репорты.
+- Резюме — ссылка на GitHub обязательна для Junior QA.
+- Работа в команде — в реальных проектах код и тесты лежат в GitHub.
 
-Резюме — ссылка на GitHub обязательна для Junior QA.
-
-Работа в команде — в реальных проектах код и тесты лежат в GitHub.
-
-2. Настройка Git
+## 2. Настройка Git
 bash
-git config --global user.name "Твой username на GitHub"
-git config --global user.email "Твой email на GitHub"
-git config --list
+- git config --global user.name "Твой username на GitHub"
+- git config --global user.email "Твой email на GitHub"
+- git config --list
 
-3. Создание SSH-ключа
-Зачем: чтобы GitHub узнавал тебя без пароля.
+## 3. Создание SSH-ключа
+### Зачем: чтобы GitHub узнавал тебя без пароля.
 
 bash
-ssh-keygen -t ed25519 -C "твой_email@example.com"
-Что произойдёт:
+- ssh-keygen -t ed25519 -C "твой_email@example.com"
 
-Нажми Enter (сохранить в папку по умолчанию).
+### Что произойдёт:
+- Нажми Enter (сохранить в папку по умолчанию).
+- Нажми Enter (без пароля) или введи пароль.
 
-Нажми Enter (без пароля) или введи пароль.
-
-Проверь:
+### Проверь:
 
 bash
-ls -la ~/.ssh/
+- ls -la ~/.ssh/
+
 Ожидаем: файлы id_ed25519 (приватный) и id_ed25519.pub (публичный).
 
-4. Добавление ключа в SSH-агент
+## 4. Добавление ключа в SSH-агент
 bash
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
+- eval "$(ssh-agent -s)"
+- ssh-add ~/.ssh/id_ed25519
 
-5. Копирование публичного ключа
+## 5. Копирование публичного ключа
 bash
-cat ~/.ssh/id_ed25519.pub
-Скопируй весь вывод (начинается с ssh-ed25519 ...).
+- cat ~/.ssh/id_ed25519.pub
+- Скопируй весь вывод (начинается с ssh-ed25519 ...).
 
-6. Добавление ключа на GitHub
-Открой GitHub → Settings.
+## 6. Добавление ключа на GitHub
+- Открой GitHub → Settings.
+- Слева: SSH and GPG keys.
+- Нажми New SSH key.
+- Title: Mila Ubuntu.
+- Key: вставь скопированный ключ.
+- Нажми Add SSH key.
 
-Слева: SSH and GPG keys.
-
-Нажми New SSH key.
-
-Title: Mila Ubuntu.
-
-Key: вставь скопированный ключ.
-
-Нажми Add SSH key.
-
-7. Проверка подключения
+## 7. Проверка подключения
 bash
-ssh -T git@github.com
+- ssh -T git@github.com
+
 Ожидаем:
 
-text
-Hi username! You've successfully authenticated...
+(text)
+- Hi username! You've successfully authenticated...
 
-8. Создание репозитория на GitHub
-Открой GitHub → New repository.
+## 8. Создание репозитория на GitHub
+- Открой GitHub → New repository.
+- Repository name: qa-portfolio
+- Visibility: Public.
+- НЕ ставь галочку «Initialize with README».
+- Нажми Create repository.
+- Скопируй URL (SSH): git@github.com:твой_username/qa-portfolio.git.
 
-Repository name: qa-portfolio
-
-Visibility: Public.
-
-НЕ ставь галочку «Initialize with README».
-
-Нажми Create repository.
-
-Скопируй URL (SSH): git@github.com:твой_username/qa-portfolio.git.
-
-9. Инициализация репозитория на хосте
+## 9. Инициализация репозитория на хосте
 bash
-cd ~/qa-notes
-git init
-git add .
-git commit -m "Initial commit: конспекты и тест-кейсы QA"
-10. Привязка к GitHub и отправка
+- cd ~/qa-notes
+- git init
+- git add .
+- git commit -m "Initial commit: конспекты и тест-кейсы QA"
+
+## 10. Привязка к GitHub и отправка
 bash
-git remote add origin git@github.com:твой_username/qa-portfolio.git
-git branch -M main
-git push -u origin main
-Разбор:
+- git remote add origin git@github.com:твой_username/qa-portfolio.git
+- git branch -M main
+- git push -u origin main
 
-git remote add origin ... — связывает локальный репозиторий с GitHub.
+### Разбор:
+- git remote add origin ... — связывает локальный репозиторий с GitHub.
+- git branch -M main — переименовывает ветку в main.
+- git push -u origin main — отправляет файлы на GitHub.
 
-git branch -M main — переименовывает ветку в main.
+## 11. Проверка на GitHub
+- Открой https://github.com/твой_username/qa-portfolio.
+- Обнови страницу — должны увидеть все файлы.
+- Если файлы на месте — поздравляю, у тебя есть портфолио на GitHub!
 
-git push -u origin main — отправляет файлы на GitHub.
+## 12. Что внутри портфолио (итог)
+Файл / Что внутри
+- day01.md … day11.md / 11 конспектов
+- test-cases-login.md / 11 тест-кейсов
+- bug-report-*.md / 7 баг-репортов
+- test-design-*.md / 3 файла тест-дизайна
+- README.md / Описание портфолио
 
-11. Проверка на GitHub
-Открой https://github.com/твой_username/qa-portfolio.
-
-Обнови страницу — должны увидеть все файлы.
-
-Если файлы на месте — поздравляю, у тебя есть портфолио на GitHub!
-
-12. Что внутри портфолио (итог)
-Файл	Что внутри
-day01.md … day11.md	11 конспектов
-test-cases-login.md	11 тест-кейсов
-bug-report-*.md	7 баг-репортов
-test-design-*.md	3 файла тест-дизайна
-README.md	Описание портфолио
-
-13. Итог Дня 10
-Что	Статус
-SSH-ключ	✅
-Ключ добавлен на GitHub	✅
-Репозиторий создан	✅
-Файлы отправлены	✅
-README	✅
-Ссылка на портфолио: https://github.com/lusimihailik-dev/qa-portfolio
+- Ссылка на портфолио: https://github.com/lusimihailik-dev/qa-portfolio
