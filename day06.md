@@ -1,31 +1,31 @@
 # День 6 — База данных (PostgreSQL)
 
-## Контейнер db
+### Контейнер db
 - IP: 10.191.30.119
 - PostgreSQL 14
 - База: qa_polygon
 - Пользователь: qa_user / qa_password
 
-## Таблица users
+### Таблица users
 - id SERIAL PRIMARY KEY
 - email VARCHAR(255) UNIQUE NOT NULL
 - password VARCHAR(255) NOT NULL
 - name VARCHAR(255)
 
-## Данные
+### Данные
 - user@example.com / Password123 / Test User
 - admin@example.com / Admin123 / Admin
 
-## Проверка
+### Проверка
 - psql -h 10.191.30.119 -U qa_user -d qa_polygon → подключение работает
 - SELECT * FROM users → две строки
 
-## Что дальше
+### Что дальше
 - Подключить API к БД (заменить JSON на PostgreSQL)
 
-## Подключение API к PostgreSQL
+### Подключение API к PostgreSQL
 
-## Права в PostgreSQL
+### Права в PostgreSQL
 - GRANT ALL PRIVILEGES ON DATABASE — только на подключение к базе
 - На таблицы нужно выдавать отдельно: GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO qa_user
 - На sequence (для SERIAL) отдельно: GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO qa_user
@@ -61,7 +61,6 @@
 
 Проверка БД — часть тестирования: данные должны сохраняться
 
-SQL — базовый навык: SELECT, INSERT, UPDATE, DELETE
+- SQL — базовый навык: SELECT, INSERT, UPDATE, DELETE
 
-Подключение к БД — QA часто проверяет данные напрямую
-
+- Подключение к БД — QA часто проверяет данные напрямую

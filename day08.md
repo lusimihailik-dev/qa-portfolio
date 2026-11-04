@@ -1,18 +1,18 @@
 # День 8 — Баг-трекер Redmine
 
-## Контейнер redmine
+### Контейнер redmine
 - IP: 10.191.30.215
 - Redmine 5.1.1
 - PostgreSQL внутри контейнера
 - Запуск: bundle exec rails server -e production -b 0.0.0.0 -p 3000
 - Сервер: Puma (добавлен в Gemfile)
 
-## Доступ
+### Доступ
 - URL: http://10.191.30.215:3000
 - Логин: admin
 - Пароль: Admin123! (свой после смены)
 
-## Что сделано
+### Что сделано
 - Склонирован Redmine с GitHub
 - Настроен database.yml
 - bundle install
@@ -21,7 +21,7 @@
 - Добавлен gem 'puma' в Gemfile
 - Запущен rails server
 
-## Что дальше
+### Что дальше
 - Создать проект QA Polygon
 - Завести баги BUG-01…BUG-05
 - Попробовать изменить статус

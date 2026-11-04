@@ -52,6 +52,7 @@ bash
 Ожидаем:
 
 (text)
+
 - Hi username! You've successfully authenticated...
 
 ## 8. Создание репозитория на GitHub

@@ -4,16 +4,18 @@
 
 JWT (JSON Web Token) — способ передать информацию о пользователе в виде подписанного токена.
 
-Проблема, которую решает JWT: раньше API отдавал данные без проверки (BUG-04: список пользователей без авторизации). JWT решает это: сервер выдаёт токен после логина и требует его для защищённых эндпоинтов.
+### Проблема, которую решает JWT: 
+- раньше API отдавал данные без проверки (BUG-04: список пользователей без авторизации). 
+- JWT решает это: сервер выдаёт токен после логина и требует его для защищённых эндпоинтов.
 
-Как работает:
-1. Пользователь логинится (email + пароль) → POST /login
-2. Сервер проверяет пароль и выдаёт токен
-3. Клиент сохраняет токен в localStorage
-4. При каждом запросе клиент отправляет токен в заголовке Authorization: Bearer <токен>
-5. Сервер проверяет подпись и пускает пользователя
+### Как работает:
+- Пользователь логинится (email + пароль) → POST /login
+- Сервер проверяет пароль и выдаёт токен
+- Клиент сохраняет токен в localStorage
+- При каждом запросе клиент отправляет токен в заголовке Authorization: Bearer <токен>
+- Сервер проверяет подпись и пускает пользователя
 
-Состав JWT: header.payload.signature
+### Состав JWT: header.payload.signature
 - header — алгоритм (HS256)
 - payload — данные (id, email, exp)
 - signature — подпись от подделки
@@ -25,32 +27,32 @@ JWT (JSON Web Token) — способ передать информацию о �
 - Срок действия 1 час (exp)
 - Передаётся в заголовке Authorization (не в URL)
 
-Что токен не даёт:
+### Что токен не даёт:
 - Не даёт доступ к чужим данным (если сервер проверяет id)
 - Не защищает от кражи токена
 
 ## 3. Установка PyJWT
 
-lxc exec api bash
-pip3 install PyJWT
-python3 -c "import jwt; print('OK')"
+- lxc exec api bash
+- pip3 install PyJWT
+- python3 -c "import jwt; print('OK')"
 
 ## 4. Основные эндпоинты
 
 ### /login (POST)
-Принимает email и password. Проверяет через bcrypt.checkpw.
-Возвращает токен и данные пользователя.
+- Принимает email и password. Проверяет через bcrypt.checkpw.
+- Возвращает токен и данные пользователя.
 
 ### /users (GET) — защищённый
-Требует заголовок Authorization: Bearer <токен>.
-Без токена → 401 Unauthorized.
+- Требует заголовок Authorization: Bearer <токен>.
+- Без токена → 401 Unauthorized.
 
 ## 5. Как получить и использовать токен
 
-Получить токен:
+### Получить токен:
 curl -X POST http://10.191.30.50:3000/login -H "Content-Type: application/json" -d '{"email":"user@example.com","password":"Password123"}'
 
-Использовать токен:
+### Использовать токен:
 curl http://10.191.30.50:3000/users -H "Authorization: Bearer <токен>"
 
 ## 6. Проверка JWT (что проверяет QA)
@@ -63,22 +65,23 @@ curl http://10.191.30.50:3000/users -H "Authorization: Bearer <токен>"
 
 ## 7. Что лежит внутри токена
 
-Payload:
-{
-  "id": 1,
-  "email": "user@example.com",
-  "exp": 1700000000
-}
+- Payload:
+- {
+-   "id": 1,
+-   "email": "user@example.com",
+-   "exp": 1700000000
+- }
 
-Чего там быть не должно:
+### Чего там быть не должно:
 - Пароля
 - Секретных данных
 
 ## 8. Фиксация IP-адресов контейнеров
 
-Проблема: LXD выдаёт IP динамически, при перезапуске IP может измениться. Это ломает nginx и подключение к БД.
+### Проблема: 
+- LXD выдаёт IP динамически, при перезапуске IP может измениться. Это ломает nginx и подключение к БД.
 
-Решение:
+### Решение:
 1. Сузить пул DHCP:
    lxc network set lxdbr0 ipv4.dhcp.ranges 10.191.30.100-10.191.30.150
 
@@ -95,25 +98,25 @@ Payload:
 4. Проверить:
    lxc list
 
-Итоговая таблица IP:
+### Итоговая таблица IP:
 - api — 10.191.30.50
 - db — 10.191.30.51
 - webserver — 10.191.30.52
 - redmine — 10.191.30.53
 - qa-base — 10.191.30.54
 
-После смены IP обновить:
+### После смены IP обновить:
 - nginx в webserver: proxy_pass http://10.191.30.50:3000/
 - server.py в api: "host": "10.191.30.51"
 
 ## 9. Найденные баги
 
-BUG-04 — частично исправлен:
+### BUG-04 — частично исправлен:
 - Раньше /users был доступен без токена
 - Теперь только с токеном (401 без токена)
 - Логин через POST (не GET, пароль не в URL)
 
-BUG-07 — новый:
+### BUG-07 — новый:
 - /users возвращает всех пользователей любому авторизованному
 - Severity: High (утечка PII)
 - Priority: High
@@ -121,47 +124,49 @@ BUG-07 — новый:
 
 ## 10. Автозапуск (systemd)
 
-Redmine (/etc/systemd/system/redmine.service):
-[Unit]
-Description=Redmine (Puma)
-After=network.target postgresql.service
+### Redmine (/etc/systemd/system/redmine.service):
+- [Unit]
+- Description=Redmine (Puma)
+- After=network.target postgresql.service
 
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/redmine-src
-Environment=RAILS_ENV=production
-ExecStart=/usr/local/bin/bundle exec rails server -e production -b 0.0.0.0 -p 3000
-Restart=on-failure
-RestartSec=5
+- [Service]
+- Type=simple
+- User=root
+- WorkingDirectory=/opt/redmine-src
+- Environment=RAILS_ENV=production
+- ExecStart=/usr/local/bin/bundle exec rails server -e production -b 0.0.0.0 -p 3000
+- Restart=on-failure
+- RestartSec=5
 
-[Install]
-WantedBy=multi-user.target
+- [Install]
+- WantedBy=multi-user.target
 
-API (/etc/systemd/system/qa-api.service):
-[Unit]
-Description=QA Polygon Flask API
-After=network.target
+- API (/etc/systemd/system/qa-api.service):
+- [Unit]
+- Description=QA Polygon Flask API
+- After=network.target
 
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/api
-ExecStart=/usr/bin/python3 /opt/api/server.py
-Restart=on-failure
-RestartSec=5
+- [Service]
+- Type=simple
+- User=root
+- WorkingDirectory=/opt/api
+- ExecStart=/usr/bin/python3 /opt/api/server.py
+- Restart=on-failure
+- RestartSec=5
 
-[Install]
-WantedBy=multi-user.target
+- [Install]
+- WantedBy=multi-user.target
 
 Включить и запустить:
-systemctl daemon-reload
-systemctl enable redmine qa-api
-systemctl start redmine qa-api
+
+- systemctl daemon-reload
+- systemctl enable redmine qa-api
+- systemctl start redmine qa-api
 
 Проверка:
-systemctl status redmine --no-pager
-systemctl status qa-api --no-pager
+
+- systemctl status redmine --no-pager
+- systemctl status qa-api --no-pager
 
 ## 11. Итог Дня 11
 
@@ -173,6 +178,3 @@ systemctl status qa-api --no-pager
 - IP-адреса зафиксированы
 - Найден BUG-07
 - Настроен автозапуск (systemd)
-
-## Что было непонятно
-- ...
