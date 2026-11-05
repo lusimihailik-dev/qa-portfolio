@@ -119,3 +119,28 @@ INSERT INTO users (email, password, name) VALUES (...);
 - curl — проверка API без Postman.
 - SQL — SELECT, INSERT, UPDATE, DELETE.
 - Cookies — отправляются на сервер, localStorage — нет.
+
+### Закрываем пробелы (Блок 3)
+
+#### Postman
+- Инструмент для тестирования API
+- Отправляет GET/POST/PUT/DELETE
+- Позволяет сохранять коллекции
+- Пример: POST /login с JSON → 200 OK
+
+#### curl
+- Утилита командной строки для HTTP-запросов
+- curl -I URL — только заголовки (статус)
+- curl -X POST -d '...' URL — POST-запрос
+- curl -H "Authorization: Bearer <токен>" — заголовок
+
+#### SQL
+- SELECT — получить данные
+- INSERT — добавить
+- UPDATE — обновить
+- DELETE — удалить
+- Проверка: psql -h IP -U user -d db → SELECT * FROM users
+
+#### Cookies vs localStorage
+- Cookies: отправляются на сервер, до 4 КБ, авторизация
+- localStorage: не отправляются, до 5–10 МБ, токены и настройки
