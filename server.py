@@ -3,6 +3,7 @@ import psycopg2
 import bcrypt
 import jwt
 import datetime
+import re
 from functools import wraps
 
 app = Flask(__name__)
@@ -69,6 +70,9 @@ def change_password():
 
     if len(new_password) < 8:
         return jsonify({"message": "Пароль должен быть не менее 8 символов"}), 400
+
+    if '<' in new_password or '>' in new_password:
+        return jsonify({"message": "Пароль содержит недопустимые символы"}), 400
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -144,6 +148,76 @@ def create_user():
     cur.close()
     conn.close()
     return jsonify({"id": new_id, "email": data.get('email'), "name": data.get('name', '')}), 201
+
+@app.route('/tasks', methods=['GET'])
+@token_required
+def get_tasks():
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    user_id = data.get('id')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, title, status, created_at FROM tasks WHERE user_id = %s ORDER BY created_at DESC", (user_id,))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return jsonify([
+        {"id": r[0], "title": r[1], "status": r[2], "created_at": r[3].isoformat()}
+        for r in rows
+    ])
+
+@app.route('/tasks', methods=['POST'])
+@token_required
+def create_task():
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    user_id = data.get('id')
+
+    body = request.get_json()
+    title = body.get('title')
+
+    if not title or len(title.strip()) == 0:
+        return jsonify({"message": "Название задачи обязательно"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO tasks (user_id, title) VALUES (%s, %s) RETURNING id, title, status, created_at",
+        (user_id, title)
+    )
+    row = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "id": row[0],
+        "title": row[1],
+        "status": row[2],
+        "created_at": row[3].isoformat()
+    }), 201
+
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+@token_required
+def delete_task(task_id):
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    user_id = data.get('id')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM tasks WHERE id = %s AND user_id = %s RETURNING id", (task_id, user_id))
+    row = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if not row:
+        return jsonify({"message": "Задача не найдена"}), 404
+
+    return jsonify({"message": "Задача удалена"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)

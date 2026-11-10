@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список задач — QA Test Site</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>QA Test Site</h1>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="profile.html">Личный кабинет</a>
+            <a href="change_password.html">Сменить пароль</a>
+            <a href="login.html">Войти</a>
+            <a href="register.html">Регистрация</a>
+            <a href="tasks.html">Список задач</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Список задач</h2>
+        <form id="task-form">
+            <input type="text" name="title" placeholder="Новая задача" required>
+            <button type="submit">Добавить</button>
+        </form>
+        <ul id="task-list">
+            <li>Загрузка...</li>
+        </ul>
+    </main>
+    <footer>
+        <p>QA Practice Environment</p>
+    </footer>
+    <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    async function loadTasks() {
+        const response = await fetch('/api/tasks', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const tasks = await response.json();
+        const list = document.getElementById('task-list');
+        list.innerHTML = '';
+        if (tasks.length === 0) {
+            list.innerHTML = '<li>Задач пока нет</li>';
+            return;
+        }
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${task.title} 
+                <button onclick="deleteTask(${task.id})">Удалить</button>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    async function deleteTask(id) {
+        await fetch(`/api/tasks/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        loadTasks();
+    }
+
+    document.getElementById('task-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const title = this.querySelector('input[name="title"]').value;
+        await fetch('/api/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ title })
+        });
+        this.reset();
+        loadTasks();
+    });
+
+    loadTasks();
+    </script>
+</body>
+</html>
