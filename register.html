@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация — QA Test Site</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+</script>
+<body>
+    <header>
+        <h1>QA Test Site</h1>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="profile.html">Личный кабинет</a>
+            <a href="change_password.html">Сменить пароль</a>
+            <a href="login.html">Войти</a>
+            <a href="register.html">Регистрация</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Регистрация</h2>
+        <form id="register-form">
+            <label>Имя:</label>
+            <input type="text" name="name" placeholder="Ваше имя" required>
+
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="user@example.com" required>
+
+            <label>Пароль:</label>
+            <input type="password" name="password" placeholder="Минимум 8 символов" required>
+
+            <label>Повторите пароль:</label>
+            <input type="password" name="password2" placeholder="Повторите пароль" required>
+
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+    </main>
+    <footer>
+        <p>QA Practice Environment</p>
+    </footer>
+<script>
+document.getElementById('register-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const name = this.querySelector('input[name="name"]').value;
+    const email = this.querySelector('input[name="email"]').value;
+    const password = this.querySelector('input[name="password"]').value;
+    const password2 = this.querySelector('input[name="password2"]').value;
+
+    if (password !== password2) {
+        alert('Пароли не совпадают!');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        if (response.ok) {
+            alert('Регистрация успешна! Теперь вы можете войти.');
+            window.location.href = 'login.html';
+        } else {
+            alert('Ошибка регистрации. Возможно, email уже занят.');
+        }
+    } catch (err) {
+        alert('Ошибка сети: ' + err.message);
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход — QA Test Site</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>QA Test Site</h1>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="profile.html">Личный кабинет</a>
+            <a href="change_password.html">Сменить пароль</a>
+            <a href="login.html">Войти</a>
+            <a href="register.html">Регистрация</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Вход</h2>
+        <form id="login-form" action="welcome.html" method="get">
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="user@example.com" required>
+
+            <label>Пароль:</label>
+            <input type="password" name="password" placeholder="Введите пароль" required>
+
+            <button type="submit">Войти</button>
+        </form>
+        <p><a href="#">Забыли пароль?</a></p>
+    </main>
+    <footer>
+        <p>QA Practice Environment</p>
+    </footer>
+    <script>
+document.getElementById('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const email = this.querySelector('input[name="email"]').value;
+    const password = this.querySelector('input[name="password"]').value;
+
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            alert('Вход выполнен!');
+            window.location.href = 'welcome.html';
+        } else {
+            alert('Неверный email или пароль');
+        }
+    } catch (err) {
+        alert('Ошибка сети: ' + err.message);
+    }
+});
+    </script>    
+</body>
+</html>
