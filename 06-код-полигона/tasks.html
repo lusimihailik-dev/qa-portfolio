@@ -50,9 +50,10 @@
         tasks.forEach(task => {
             const li = document.createElement('li');
             li.innerHTML = `
-                ${task.title} 
+                <strong>${task.title}</strong> [${task.status}]
+                <button onclick="editTask(${task.id}, '${task.title}', '${task.status}')">Редактировать</button>
                 <button onclick="deleteTask(${task.id})">Удалить</button>
-            `;
+    `;
             list.appendChild(li);
         });
     }
@@ -79,6 +80,30 @@
         this.reset();
         loadTasks();
     });
+
+async function editTask(id, currentTitle, currentStatus) {
+    const newTitle = prompt('Новое название:', currentTitle);
+    if (newTitle === null) return;
+
+    const newStatus = prompt('Новый статус (new / in_progress / done):', currentStatus);
+    if (newStatus === null) return;
+
+    const response = await fetch(`/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: newTitle, status: newStatus })
+    });
+
+    if (response.ok) {
+        loadTasks();
+    } else {
+        const data = await response.json();
+        alert('Ошибка: ' + data.message);
+    }
+}
 
     loadTasks();
     </script>

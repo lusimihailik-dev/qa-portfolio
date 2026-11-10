@@ -219,5 +219,52 @@ def delete_task(task_id):
 
     return jsonify({"message": "Задача удалена"})
 
+@app.route('/tasks/<int:task_id>', methods=['PUT'])
+@token_required
+def update_task(task_id):
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    user_id = data.get('id')
+
+    body = request.get_json()
+    title = body.get('title')
+    status = body.get('status')
+
+    if not title and not status:
+        return jsonify({"message": "Нужно передать title или status"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Проверяем, что задача принадлежит пользователю
+    cur.execute("SELECT id FROM tasks WHERE id = %s AND user_id = %s", (task_id, user_id))
+    if not cur.fetchone():
+        cur.close()
+        conn.close()
+        return jsonify({"message": "Задача не найдена"}), 404
+
+    if title:
+        cur.execute("UPDATE tasks SET title = %s WHERE id = %s", (title, task_id))
+    if status:
+        if status not in ('new', 'in_progress', 'done'):
+            cur.close()
+            conn.close()
+            return jsonify({"message": "Недопустимый статус"}), 400
+        cur.execute("UPDATE tasks SET status = %s WHERE id = %s", (status, task_id))
+
+    conn.commit()
+
+    cur.execute("SELECT id, title, status, created_at FROM tasks WHERE id = %s", (task_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "id": row[0],
+        "title": row[1],
+        "status": row[2],
+        "created_at": row[3].isoformat()
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)
